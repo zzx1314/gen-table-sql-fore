@@ -1,5 +1,6 @@
 <template>
   <div>
+    <pre><code class="language-sql line-numbers">{{sql}}</code></pre>
     <vxe-table
         border
         show-overflow
@@ -70,8 +71,17 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref,onMounted, onUpdated } from 'vue'
 import { VXETable, VxeTableInstance } from 'vxe-table'
+import Prism from "prismjs";
+
+onUpdated(() => {
+  Prism.highlightAll(); //修改内容后重新渲染
+});
+
+onMounted(() => {
+  Prism.highlightAll(); //切换菜单重新渲染
+})
 
 interface RowVO {
   id: number
@@ -99,6 +109,8 @@ const booleanList = ref([
   { label: '是', value: '1' },
   { label: '否', value: '0' }
 ])
+
+const sql = ref('SELECT * FROM p_sys_user')
 
 const formatBoolean = (value: string) => {
   if (value === '是') {
