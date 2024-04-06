@@ -13,11 +13,13 @@
           show-overflow
           keep-source
           ref="xTable"
+          :row-config="{isCurrent: true, isHover: true}"
           :column-config="{resizable: true}"
           :loading="loading"
           :data="tableData"
           :edit-config="{trigger: 'manual', mode: 'row', showStatus: true}">
-        <vxe-column type="seq" width="60"></vxe-column>
+        <vxe-column type="checkbox" width="60"></vxe-column>
+        <vxe-column type="seq" width="50"></vxe-column>
         <vxe-column field="columnName" title="字段名" :edit-render="{}">
           <template #edit="{ row }: { row:RowVO}">
             <vxe-input v-model="row.columnName" type="text"></vxe-input>
