@@ -17,6 +17,7 @@
           :column-config="{resizable: true}"
           :loading="loading"
           :data="tableData"
+          @current-change="currentChangeEvent"
           :edit-config="{trigger: 'manual', mode: 'row', showStatus: true}">
         <vxe-column type="checkbox" width="60"></vxe-column>
         <vxe-column type="seq" width="50"></vxe-column>
@@ -96,7 +97,7 @@
 
 <script lang="ts" setup>
 import { ref,onMounted, onUpdated } from 'vue'
-import { VXETable, VxeTableInstance } from 'vxe-table'
+import { VXETable, VxeTableInstance,VxeTableEvents } from 'vxe-table'
 import Prism from "prismjs";
 
 onUpdated(() => {
@@ -135,6 +136,11 @@ const booleanList = ref([
 ])
 
 const sql = ref('SELECT * FROM p_sys_user')
+
+
+const currentChangeEvent: VxeTableEvents.CurrentChange<RowVO> = ({ rowIndex }) => {
+  console.log(`行选中事件 ${rowIndex}`)
+}
 
 const insertEvent = async (row?: RowVO | number) => {
   const $table = xTable.value
