@@ -31,8 +31,13 @@
           </template>
         </vxe-column>
         <vxe-column field="isAutoIncrement" title="自增id" :edit-render="{}">
-          <template #edit="{ row }: { row:RowVO}">
-            <vxe-input v-model="row.isAutoIncrement" type="text" placeholder="请输入是否主键"></vxe-input>
+          <template #default="{ row } : { row:RowVO}">
+            <span>{{ formatBoolean(row.isAutoIncrement) }}</span>
+          </template>
+          <template #edit="{ row } : { row:RowVO}">
+            <vxe-select v-model="row.isAutoIncrement" transfer>
+              <vxe-option v-for="item in booleanList" :key="item.value" :value="item.value" :label="item.label"></vxe-option>
+            </vxe-select>
           </template>
         </vxe-column>
         <vxe-column field="length" title="长度" :edit-render="{}">
@@ -41,8 +46,13 @@
           </template>
         </vxe-column>
         <vxe-column field="nullable" title="是否为空" :edit-render="{}">
-          <template #edit="{ row }: { row:RowVO}">
-            <vxe-input v-model="row.nullable" type="text" placeholder="是否为空"></vxe-input>
+          <template #default="{ row } : { row:RowVO}">
+            <span>{{ formatBoolean(row.nullable) }}</span>
+          </template>
+          <template #edit="{ row } : { row:RowVO}">
+            <vxe-select v-model="row.nullable" transfer>
+              <vxe-option v-for="item in booleanList" :key="item.value" :value="item.value" :label="item.label"></vxe-option>
+            </vxe-select>
           </template>
         </vxe-column>
         <vxe-column field="remarks" title="备注" :edit-render="{}">
@@ -103,10 +113,10 @@ const xTable = ref<VxeTableInstance<RowVO>>()
 
 const loading = ref(false)
 const tableData = ref<RowVO[]>([
-  { id: 10003, columnName: 'Test3', columnType: 'T3', isPrimaryKey: '是',     isAutoIncrement: '0', length: 1, nullable: '11', remarks: '11',  defaultValue: '123'},
-  { id: 10002, columnName: 'Test2', columnType: 'T2', isPrimaryKey: '否', isAutoIncrement: '1', length: 2, nullable: '11', remarks: '11',  defaultValue: '123'},
-  { id: 10004, columnName: 'Test4', columnType: 'T4', isPrimaryKey: '是', isAutoIncrement: '1', length: 1, nullable: '11', remarks: '11',  defaultValue: '123'},
-  { id: 10001, columnName: 'Test1', columnType: 'T1', isPrimaryKey: '是', isAutoIncrement: '0', length: 3, nullable: '11', remarks: '11', defaultValue: '123' }
+  { id: 10003, columnName: 'Test3', columnType: 'T3', isPrimaryKey: '1', isAutoIncrement: '1', length: 1, nullable: '1', remarks: '11',  defaultValue: '123'},
+  { id: 10002, columnName: 'Test2', columnType: 'T2', isPrimaryKey: '0', isAutoIncrement: '1', length: 2, nullable: '1', remarks: '11',  defaultValue: '123'},
+  { id: 10004, columnName: 'Test4', columnType: 'T4', isPrimaryKey: '1', isAutoIncrement: '1', length: 1, nullable: '1', remarks: '11',  defaultValue: '123'},
+  { id: 10001, columnName: 'Test1', columnType: 'T1', isPrimaryKey: '1', isAutoIncrement: '1', length: 3, nullable: '1', remarks: '11', defaultValue: '123' }
 ])
 const booleanList = ref([
   { label: '', value: '' },
@@ -117,10 +127,10 @@ const booleanList = ref([
 const sql = ref('SELECT * FROM p_sys_user')
 
 const formatBoolean = (value: string) => {
-  if (value === '是') {
+  if (value === '1') {
     return '是'
   }
-  if (value === '否') {
+  if (value === '0') {
     return '否'
   }
   return ''
