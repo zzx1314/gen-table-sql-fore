@@ -1,14 +1,22 @@
 <template>
+  <div>
+    <vxe-toolbar>
+      <template #buttons>
+        <vxe-button @click="insertEvent(-1)">在最后行插入</vxe-button>
+      </template>
+    </vxe-toolbar>
+  </div>
   <div class="container">
     <div class="table">
       <vxe-table
           border
           show-overflow
+          keep-source
           ref="xTable"
           :column-config="{resizable: true}"
           :loading="loading"
           :data="tableData"
-          :edit-config="{trigger: 'manual', mode: 'row'}">
+          :edit-config="{trigger: 'manual', mode: 'row', showStatus: true}">
         <vxe-column type="seq" width="60"></vxe-column>
         <vxe-column field="columnName" title="字段名" :edit-render="{}">
           <template #edit="{ row }: { row:RowVO}">
@@ -125,6 +133,17 @@ const booleanList = ref([
 ])
 
 const sql = ref('SELECT * FROM p_sys_user')
+
+const insertEvent = async (row?: RowVO | number) => {
+  const $table = xTable.value
+  if ($table) {
+    const record = {
+      id: 10004, columnName: 'Test5', columnType: 'T3', isPrimaryKey: '1', isAutoIncrement: '1', length: 1, nullable: '1', remarks: '11',  defaultValue: '123'
+    }
+    const { row: newRow } = await $table.insertAt(record, row)
+    await $table.setEditCell(newRow, 'columnName')
+  }
+}
 
 const formatBoolean = (value: string) => {
   if (value === '1') {
