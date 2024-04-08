@@ -17,6 +17,7 @@
           :column-config="{resizable: true}"
           :loading="loading"
           :data="tableData"
+          @keydown="handleKeyDown"
           @current-change="currentChangeEvent"
           :edit-config="{trigger: 'manual', mode: 'row', showStatus: true}">
         <vxe-column type="checkbox" width="60"></vxe-column>
@@ -137,9 +138,45 @@ const booleanList = ref([
 
 const sql = ref('SELECT * FROM p_sys_user')
 
+const selectRow = ref(null)
 
 const currentChangeEvent: VxeTableEvents.CurrentChange<RowVO> = ({ rowIndex }) => {
   console.log(`行选中事件 ${rowIndex}`)
+  selectRow.value = rowIndex
+}
+
+const handleKeyDown = (param: any) => {
+  const keyCode = param.$event.keyCode;
+  if (keyCode === 38 || keyCode === 40) {
+    param.$event.preventDefault(); // 可选：阻止默认行为，如光标移动等
+    if (keyCode === 38) {
+      console.log('向上移动');
+      if (selectRow.value > 0){
+        let temp = tableData.value[selectRow.value]
+        let crow = selectRow.value - 1
+        // 元素交换位置
+        tableData.value[selectRow.value] = tableData.value[crow]
+        tableData.value[crow] = temp
+        param.$table.loadData(tableData.value)
+
+        param.$table.setCurrentRow(tableData.value[crow])
+        selectRow.value = crow
+      }
+    } else {
+      console.log('向下移动');
+      if (selectRow.value < tableData.value.length - 1){
+        let temp = tableData.value[selectRow.value]
+        let crow = selectRow.value + 1
+        // 元素交换位置
+        tableData.value[selectRow.value] = tableData.value[crow]
+        tableData.value[crow] = temp
+        param.$table.loadData(tableData.value)
+
+        param.$table.setCurrentRow(tableData.value[crow])
+        selectRow.value = crow
+      }
+    }
+  }
 }
 
 const insertEvent = async (row?: RowVO | number) => {
