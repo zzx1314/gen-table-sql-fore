@@ -21,4 +21,4 @@ npm run build
 ```
 
 ## 页面预览
-<img src="https://github.com/zzx1314/gen-table-sql-fore/img/home.png" width="100%" height="100%">
+<img src="https://github.com/zzx1314/gen-table-sql-fore/blob/master/img/home.png" width="100%" height="100%">
