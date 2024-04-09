@@ -2,7 +2,9 @@
   <div>
     <vxe-toolbar>
       <template #buttons>
-        <vxe-button @click="insertEvent(-1)">在最后行插入</vxe-button>
+        <vxe-button status="primary" @click="insertEvent(-1)">新增一行</vxe-button>
+        <vxe-button status="primary" @click="insertEvent(-1)">设置数据库</vxe-button>
+        <vxe-button type="text" icon="vxe-icon-bell-fill" :status="dbStatus" class="tip"></vxe-button>
       </template>
     </vxe-toolbar>
   </div>
@@ -98,7 +100,9 @@
 
 <script lang="ts" setup>
 import { ref,onMounted, onUpdated } from 'vue'
-import { VXETable, VxeTableInstance,VxeTableEvents } from 'vxe-table'
+import { VXETable } from 'vxe-table'
+import type { VxeTableInstance } from 'vxe-table';
+import type { VxeTableEvents } from 'vxe-table';
 import Prism from "prismjs";
 
 onUpdated(() => {
@@ -122,13 +126,14 @@ interface RowVO {
 }
 
 const xTable = ref<VxeTableInstance<RowVO>>()
+const dbStatus = ref('danger')
 
 const loading = ref(false)
 const tableData = ref<RowVO[]>([
-  { id: 10003, columnName: 'Test3', columnType: 'T3', isPrimaryKey: '1', isAutoIncrement: '1', length: 1, nullable: '1', remarks: '11',  defaultValue: '123'},
-  { id: 10002, columnName: 'Test2', columnType: 'T2', isPrimaryKey: '0', isAutoIncrement: '1', length: 2, nullable: '1', remarks: '11',  defaultValue: '123'},
-  { id: 10004, columnName: 'Test4', columnType: 'T4', isPrimaryKey: '1', isAutoIncrement: '1', length: 1, nullable: '1', remarks: '11',  defaultValue: '123'},
-  { id: 10001, columnName: 'Test1', columnType: 'T1', isPrimaryKey: '1', isAutoIncrement: '1', length: 3, nullable: '1', remarks: '11', defaultValue: '123' }
+  { id: 10003, columnName: 'id', columnType: 'int', isPrimaryKey: '1', isAutoIncrement: '1', length: 11, nullable: '0', remarks: 'id',  defaultValue: ''},
+  { id: 10002, columnName: 'username', columnType: 'varchar', isPrimaryKey: '0', isAutoIncrement: '0', length: 255, nullable: '0', remarks: '用户名',  defaultValue: ''},
+  { id: 10004, columnName: 'password', columnType: 'varchar', isPrimaryKey: '0', isAutoIncrement: '0', length: 255, nullable: '0', remarks: '密码',  defaultValue: ''},
+  { id: 10001, columnName: 'org_id', columnType: 'int', isPrimaryKey: '0', isAutoIncrement: '0', length: 14, nullable: '0', remarks: '组织ID', defaultValue: '' }
 ])
 const booleanList = ref([
   { label: '', value: '' },
@@ -136,9 +141,14 @@ const booleanList = ref([
   { label: '否', value: '0' }
 ])
 
-const sql = ref('SELECT * FROM p_sys_user')
 
-const selectRow = ref(null)
+const sql = ref(`DROP TABLE IF EXISTS \`sys_user\`;
+CREATE TABLE \`sys_user\`
+(
+    \`id\` int(11)  NOT NULL  AUTO_INCREMENT PRIMARY KEY COMMENT 'id'
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户表' ROW_FORMAT = Dynamic;`)
+
+const selectRow = ref(0)
 
 const currentChangeEvent: VxeTableEvents.CurrentChange<RowVO> = ({ rowIndex }) => {
   console.log(`行选中事件 ${rowIndex}`)
@@ -256,5 +266,10 @@ const cancelRowEvent = (row: RowVO) => {
 .container > .sql {
   flex: 0 0 44%; /* 设置flex-grow(增长比例)、flex-shrink(收缩比例)和flex-basis(基础大小)，确保固定为50%宽度 */
   box-sizing: border-box; /* 包含 padding 和 border 在计算宽度之内，避免因边距或边框导致总宽度超出100% */
+  overflow: auto;
+}
+
+.tip{
+  font-size: 25px;
 }
 </style>
