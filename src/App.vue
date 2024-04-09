@@ -4,7 +4,7 @@
       <template #buttons>
         <vxe-button status="primary" @click="insertEvent(-1)">新增一行</vxe-button>
         <vxe-button status="primary" @click="removeSelectRowEvent">删除选中</vxe-button>
-        <vxe-button status="primary" @click="insertEvent(-1)">设置数据库</vxe-button>
+        <vxe-button status="primary" @click="setDb()">设置数据库</vxe-button>
         <vxe-button type="text" icon="vxe-icon-bell-fill" :status="dbStatus" class="tip"></vxe-button>
       </template>
     </vxe-toolbar>
@@ -97,13 +97,52 @@
       <pre><code class="language-sql line-numbers">{{sql}}</code></pre>
     </div>
   </div>
+  <div>
+    <vxe-modal v-model="showEdit" title="设置数据库" width="800" min-width="600" min-height="300"  resize destroy-on-close>
+      <template #default>
+        <vxe-form :data="formData" :rules="formRules" title-align="right" title-width="100" @submit="submitEvent">
+          <vxe-form-item field="driver" title="driver" :span="12" :item-render="{}">
+            <template #default="{ data }">
+              <vxe-input v-model="data.driver" placeholder="请输入驱动名称"></vxe-input>
+            </template>
+          </vxe-form-item>
+          <vxe-form-item field="url" title="url"  :span="12" :item-render="{}">
+            <template #default="{ data }">
+              <vxe-input v-model="data.url" placeholder="请输入url"></vxe-input>
+            </template>
+          </vxe-form-item>
+          <vxe-form-item field="userName" title="userName" :span="12"  :item-render="{}">
+            <template #default="{ data }">
+              <vxe-input v-model="data.userName" placeholder="请输入用户名"></vxe-input>
+            </template>
+          </vxe-form-item>
+          <vxe-form-item field="password" title="password"  :span="12" :item-render="{}">
+            <template #default="{ data }">
+              <vxe-input v-model="data.password" placeholder="请输入密码"></vxe-input>
+            </template>
+          </vxe-form-item>
+          <vxe-form-item field="dbName" title="dbName"  :span="12" :item-render="{}">
+            <template #default="{ data }">
+              <vxe-input v-model="data.dbName" placeholder="请输入数据库名称"></vxe-input>
+            </template>
+          </vxe-form-item>
+          <vxe-form-item align="center" title-align="left" :span="24">
+            <template #default>
+              <vxe-button type="submit">提交</vxe-button>
+              <vxe-button type="reset">重置</vxe-button>
+            </template>
+          </vxe-form-item>
+        </vxe-form>
+      </template>
+    </vxe-modal>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { ref,onMounted, onUpdated } from 'vue'
-import { VXETable } from 'vxe-table'
+import { ref,onMounted, onUpdated,reactive } from 'vue'
+import { VXETable} from 'vxe-table'
 import type { VxeTableInstance } from 'vxe-table';
-import type { VxeTableEvents } from 'vxe-table';
+import type { VxeTableEvents, VxeFormPropTypes} from 'vxe-table';
 import Prism from "prismjs";
 
 onUpdated(() => {
@@ -126,10 +165,33 @@ interface RowVO {
   defaultValue: string
 }
 
+const formData = reactive({
+  driver: '',
+  url: '',
+  userName: '',
+  password: '',
+  dbName: ''
+})
+
+const formRules = reactive<VxeFormPropTypes.Rules>({
+  driver: [
+    { required: true, content: '请输入驱动名称' },
+  ],
+  url: [
+    { required: true, content: '请输入数据库url' }
+  ],
+  userName: [
+    { required: true, content: '请输入数据库用户名' }
+  ],
+  password: [
+    { required: true, content: '请输入数据库密码' }
+  ]
+})
+
 const xTable = ref<VxeTableInstance<RowVO>>()
 const dbStatus = ref('danger')
-
 const loading = ref(false)
+const showEdit = ref(false)
 const tableData = ref<RowVO[]>([
   { id: 10003, columnName: 'id', columnType: 'int', isPrimaryKey: '1', isAutoIncrement: '1', length: 11, nullable: '0', remarks: 'id',  defaultValue: ''},
   { id: 10002, columnName: 'username', columnType: 'varchar', isPrimaryKey: '0', isAutoIncrement: '0', length: 255, nullable: '0', remarks: '用户名',  defaultValue: ''},
@@ -154,6 +216,16 @@ const selectRow = ref(0)
 const currentChangeEvent: VxeTableEvents.CurrentChange<RowVO> = ({ rowIndex }) => {
   console.log(`行选中事件 ${rowIndex}`)
   selectRow.value = rowIndex
+}
+
+const submitEvent = () => {
+  const $table = xTable.value
+  if ($table) {
+    showEdit.value = false
+    dbStatus.value = "success"
+
+    VXETable.modal.message({ content: '设置成功', status: 'success' })
+  }
 }
 
 const handleKeyDown = (param: any) => {
@@ -206,6 +278,10 @@ const removeSelectRowEvent = () => {
   if ($table) {
     $table.removeCheckboxRow()
   }
+}
+
+const setDb = () => {
+  showEdit.value = true
 }
 
 const formatBoolean = (value: string) => {
