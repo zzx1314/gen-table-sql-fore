@@ -1,20 +1,8 @@
 # gen-table-sql
 
-This template should help get you started developing with Vue 3 in Vite.
+这是一个使用vue3生成mysql表sql的vue项目
 
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
+## 项目启动
 
 ```sh
 npm install
@@ -31,3 +19,6 @@ npm run dev
 ```sh
 npm run build
 ```
+
+## 页面预览
+<img src="https://github.com/zzx1314/gen-table-sql-fore/img/home.png" width="100%" height="100%">
