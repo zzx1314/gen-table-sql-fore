@@ -3,6 +3,7 @@
     <vxe-toolbar>
       <template #buttons>
         <vxe-button status="primary" @click="insertEvent(-1)">新增一行</vxe-button>
+        <vxe-button status="primary" @click="removeSelectRowEvent">删除选中</vxe-button>
         <vxe-button status="primary" @click="insertEvent(-1)">设置数据库</vxe-button>
         <vxe-button type="text" icon="vxe-icon-bell-fill" :status="dbStatus" class="tip"></vxe-button>
       </template>
@@ -197,6 +198,13 @@ const insertEvent = async (row?: RowVO | number) => {
     }
     const { row: newRow } = await $table.insertAt(record, row)
     await $table.setEditCell(newRow, 'columnName')
+  }
+}
+
+const removeSelectRowEvent = () => {
+  const $table = xTable.value
+  if ($table) {
+    $table.removeCheckboxRow()
   }
 }
 
