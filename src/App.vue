@@ -121,9 +121,14 @@
               <vxe-input v-model="data.password" placeholder="请输入密码"></vxe-input>
             </template>
           </vxe-form-item>
-          <vxe-form-item field="dbName" title="dbName"  :span="12" :item-render="{}">
+          <vxe-form-item field="tableName" title="dbName"  :span="12" :item-render="{}">
             <template #default="{ data }">
-              <vxe-input v-model="data.dbName" placeholder="请输入数据库名称"></vxe-input>
+              <vxe-input v-model="data.tableName" placeholder="请输入表名称"></vxe-input>
+            </template>
+          </vxe-form-item>
+          <vxe-form-item field="tableComment" title="tableComment"  :span="12" :item-render="{}">
+            <template #default="{ data }">
+              <vxe-input v-model="data.tableComment" placeholder="请输入表备注"></vxe-input>
             </template>
           </vxe-form-item>
           <vxe-form-item align="center" title-align="left" :span="24">
@@ -170,7 +175,8 @@ const formData = reactive({
   url: '',
   userName: '',
   password: '',
-  dbName: ''
+  tableName: '',
+  tableComment: ''
 })
 
 const formRules = reactive<VxeFormPropTypes.Rules>({
@@ -185,7 +191,10 @@ const formRules = reactive<VxeFormPropTypes.Rules>({
   ],
   password: [
     { required: true, content: '请输入数据库密码' }
-  ]
+  ],
+  tableName: [
+    { required: true, content: '请输入表名称' }
+  ],
 })
 
 const xTable = ref<VxeTableInstance<RowVO>>()
