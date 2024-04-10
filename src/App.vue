@@ -121,7 +121,7 @@
               <vxe-input v-model="data.password" placeholder="请输入密码"></vxe-input>
             </template>
           </vxe-form-item>
-          <vxe-form-item field="tableName" title="dbName"  :span="12" :item-render="{}">
+          <vxe-form-item field="tableName" title="tableName"  :span="12" :item-render="{}">
             <template #default="{ data }">
               <vxe-input v-model="data.tableName" placeholder="请输入表名称"></vxe-input>
             </template>
@@ -168,6 +168,12 @@ interface RowVO {
   nullable: string
   remarks: string
   defaultValue: string
+}
+
+interface httpResult {
+  status: number,
+  msg: string,
+  data: any
 }
 
 const formData = reactive({
@@ -232,8 +238,37 @@ const submitEvent = () => {
   if ($table) {
     showEdit.value = false
     dbStatus.value = "success"
+    console.log(formData)
+    sendPostRequest('/api/testConnection', formData).then(one =>{
+      if (one.status == 200){
+        VXETable.modal.message({ content: '连接成功！', status: 'success' })
+      } else {
+        VXETable.modal.message({ content: '设置成功', status: 'error' })
+      }
+    })
+  }
+}
 
-    VXETable.modal.message({ content: '设置成功', status: 'success' })
+const sendPostRequest = async (url: string, data: any): Promise<httpResult> => {
+  const headers = {
+    'Content-Type': 'application/json', // 或其他适用的 Content-Type，如 'application/x-www-form-urlencoded'
+  };
+  const options = {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(data), // 如果 Content-Type 为 'application/json'
+    // body: new URLSearchParams(data), // 如果 Content-Type 为 'application/x-www-form-urlencoded'
+  };
+  try {
+    const response = await fetch(url, options);
+    if (!response.ok) throw new Error('Network response was not ok');
+    const responseData = await response.json(); // 如果响应数据是 JSON 格式
+    // const responseData = await response.text(); // 如果响应数据是文本或其他格式
+    console.log('Response data:', responseData.status);
+    return responseData;
+  } catch (error) {
+    console.error('Error sending POST request:', error);
+    throw error; // 可选：抛出错误以在上层处理
   }
 }
 
