@@ -31,10 +31,16 @@
             <vxe-input v-model="row.columnName" type="text"></vxe-input>
           </template>
         </vxe-column>
-        <vxe-column field="columnType" title="类型" :edit-render="{}">
-          <template #edit="{ row }: { row:RowVO}">
-            <vxe-input v-model="row.columnType" type="text" placeholder="请输入字段类型"></vxe-input>
+        <vxe-column field="columnType" title="类型" width="90" :edit-render="{}">
+          <template #default="{ row } : { row:RowVO}">
+            <span>{{ row.columnType}}</span>
           </template>
+          <template #edit="{ row } : { row:RowVO}">
+            <vxe-select v-model="row.columnType" transfer @change="columnTypeChange(row)">
+              <vxe-option v-for="item in sqlTypeList" :key="item.value" :value="item.value" :label="item.label"></vxe-option>
+            </vxe-select>
+          </template>
+
         </vxe-column>
         <vxe-column field="isPrimaryKey" title="主键" :edit-render="{}">
           <template #default="{ row } : { row:RowVO}">
@@ -230,6 +236,30 @@ const booleanList = ref([
   { label: '是', value: true },
   { label: '否', value: false }
 ])
+
+const sqlTypeList = ref([
+  { label: 'VARCHAR', value: 'VARCHAR' },
+  { label: 'CHAR', value: 'CHAR' },
+  { label: 'TEXT', value: 'TEXT' },
+  { label: 'INTEGER', value: 'INTEGER' },
+  { label: 'BIGINT', value: 'BIGINT' },
+  { label: 'DECIMAL', value: 'DECIMAL' },
+  { label: 'FLOAT', value: 'FLOAT' },
+  { label: 'DOUBLE', value: 'DOUBLE' },
+  { label: 'DATE', value: 'DATE' },
+  { label: 'TIME', value: 'TIME' },
+  { label: 'DATETIME', value: 'DATETIME' },
+  { label: 'TIMESTAMP', value: 'TIMESTAMP' }
+])
+
+const columnTypeChange = (row: RowVO) =>{
+  console.log("111",row)
+  if (row.columnType == 'VARCHAR' || row.columnType == 'CHAR' || row.columnType == 'TEXT'){
+    row.metaInfo.length = 255
+  } else if (row.columnType == 'INTEGER' || row.columnType == 'BIGINT' || row.columnType == 'DECIMAL' || row.columnType == 'FLOAT' || row.columnType == 'DOUBLE'){
+    row.metaInfo.length = 11
+  }
+}
 
 
 const sql = ref(``)
