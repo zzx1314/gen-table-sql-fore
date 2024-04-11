@@ -2,9 +2,10 @@
   <div>
     <vxe-toolbar>
       <template #buttons>
-        <vxe-button status="primary" @click="insertEvent(-1)">新增一行</vxe-button>
-        <vxe-button status="primary" @click="removeSelectRowEvent">删除选中</vxe-button>
-        <vxe-button status="primary" @click="setDb()">设置数据库</vxe-button>
+        <vxe-button status="primary" @click="insertEvent(-1)" icon="vxe-icon-add">新增一行</vxe-button>
+        <vxe-button status="primary" @click="removeSelectRowEvent" icon="vxe-icon-delete-fill">删除选中</vxe-button>
+        <vxe-button status="primary" @click="setDb()" icon="vxe-icon-setting">设置数据库</vxe-button>
+        <vxe-button status="primary" @click="executeSql()" icon="vxe-icon-flag">执行SQL</vxe-button>
         <vxe-button type="text" icon="vxe-icon-bell-fill" :status="dbStatus" class="tip"></vxe-button>
       </template>
     </vxe-toolbar>
@@ -336,6 +337,10 @@ const removeSelectRowEvent = () => {
 
 const setDb = () => {
   showEdit.value = true
+}
+
+const executeSql = () =>{
+  // 执行sql
 }
 
 const formatBoolean = (value: boolean) => {
