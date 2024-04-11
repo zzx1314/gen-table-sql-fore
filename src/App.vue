@@ -1,5 +1,6 @@
 <template>
   <div>
+    <P style="font-size: large; font-weight: bold">数据库建表工具</P>
     <vxe-toolbar>
       <template #buttons>
         <vxe-button status="primary" @click="insertEvent(-1)" icon="vxe-icon-add">新增一行</vxe-button>
