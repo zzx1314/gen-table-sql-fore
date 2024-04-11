@@ -149,6 +149,8 @@ import { VXETable} from 'vxe-table'
 import type { VxeTableInstance } from 'vxe-table';
 import type { VxeTableEvents, VxeFormPropTypes} from 'vxe-table';
 import Prism from "prismjs";
+import {types} from "sass";
+import List = types.List;
 
 onUpdated(() => {
   Prism.highlightAll(); //修改内容后重新渲染
@@ -162,12 +164,18 @@ interface RowVO {
   id: number
   columnName: string
   columnType: string
-  isPrimaryKey: string
-  isAutoIncrement: string
+  isPrimaryKey: boolean
+  isAutoIncrement: boolean
   length: number
-  nullable: string
+  nullable: boolean
   remarks: string
   defaultValue: string
+}
+
+interface TableInfo {
+  tableName: string,
+  tableFields: Array<RowVO>,
+  tableComment: string
 }
 
 interface httpResult {
@@ -207,16 +215,11 @@ const xTable = ref<VxeTableInstance<RowVO>>()
 const dbStatus = ref('danger')
 const loading = ref(false)
 const showEdit = ref(false)
-const tableData = ref<RowVO[]>([
-  { id: 10003, columnName: 'id', columnType: 'int', isPrimaryKey: '1', isAutoIncrement: '1', length: 11, nullable: '0', remarks: 'id',  defaultValue: ''},
-  { id: 10002, columnName: 'username', columnType: 'varchar', isPrimaryKey: '0', isAutoIncrement: '0', length: 255, nullable: '0', remarks: '用户名',  defaultValue: ''},
-  { id: 10004, columnName: 'password', columnType: 'varchar', isPrimaryKey: '0', isAutoIncrement: '0', length: 255, nullable: '0', remarks: '密码',  defaultValue: ''},
-  { id: 10001, columnName: 'org_id', columnType: 'int', isPrimaryKey: '0', isAutoIncrement: '0', length: 14, nullable: '0', remarks: '组织ID', defaultValue: '' }
-])
+const tableData = ref<RowVO[]>([])
 const booleanList = ref([
   { label: '', value: '' },
-  { label: '是', value: '1' },
-  { label: '否', value: '0' }
+  { label: '是', value: true },
+  { label: '否', value: false }
 ])
 
 
@@ -310,7 +313,7 @@ const insertEvent = async (row?: RowVO | number) => {
   const $table = xTable.value
   if ($table) {
     const record = {
-      id: 10004, columnName: 'Test5', columnType: 'T3', isPrimaryKey: '1', isAutoIncrement: '1', length: 1, nullable: '1', remarks: '11',  defaultValue: '123'
+       columnName: '', columnType: '', isPrimaryKey: false, isAutoIncrement: false, length: 0, nullable: false, remarks: '',  defaultValue: ''
     }
     const { row: newRow } = await $table.insertAt(record, row)
     await $table.setEditCell(newRow, 'columnName')
@@ -328,11 +331,11 @@ const setDb = () => {
   showEdit.value = true
 }
 
-const formatBoolean = (value: string) => {
-  if (value === '1') {
+const formatBoolean = (value: boolean) => {
+  if (value) {
     return '是'
   }
-  if (value === '0') {
+  if (!value) {
     return '否'
   }
   return ''
@@ -359,7 +362,8 @@ const saveRowEvent = (row: RowVO) => {
       loading.value = true
       setTimeout(() => {
         loading.value = false
-        console.log(row)
+        tableData.value.push(row)
+        console.log(tableData.value)
         VXETable.modal.message({ content: `保存成功！name=${row.columnName}`, status: 'success' })
       }, 300)
     })
