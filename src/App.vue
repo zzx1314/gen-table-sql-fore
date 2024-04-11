@@ -1,6 +1,6 @@
 <template>
   <div>
-    <P style="font-size: large; font-weight: bold">数据库建表工具</P>
+    <p style="font-size: large; font-weight: bold">数据库建表工具</p>
     <vxe-toolbar>
       <template #buttons>
         <vxe-button status="primary" @click="insertEvent(-1)" icon="vxe-icon-add">新增一行</vxe-button>
@@ -118,6 +118,7 @@
     <vxe-modal v-model="showEdit" title="设置数据库" width="800" min-width="600" min-height="300"  resize destroy-on-close>
       <template #default>
         <vxe-form :data="formData" :rules="formRules" title-align="right" title-width="100" @submit="submitEvent">
+          <vxe-form-item title="数据库信息" title-align="left" :title-width="200" :span="24" :title-prefix="{icon: 'vxe-icon-comment'}"></vxe-form-item>
           <vxe-form-item field="driver" title="driver" :span="12" :item-render="{}">
             <template #default="{ data }">
               <vxe-input v-model="data.driver" placeholder="请输入驱动名称"></vxe-input>
@@ -138,6 +139,7 @@
               <vxe-input v-model="data.password" placeholder="请输入密码"></vxe-input>
             </template>
           </vxe-form-item>
+          <vxe-form-item title="表信息" title-align="left" :title-width="200" :span="24" :title-prefix="{icon: 'vxe-icon-comment'}"></vxe-form-item>
           <vxe-form-item field="tableName" title="tableName"  :span="12" :item-render="{}">
             <template #default="{ data }">
               <vxe-input v-model="data.tableName" placeholder="请输入表名称"></vxe-input>
