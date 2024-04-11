@@ -56,28 +56,37 @@
           </template>
         </vxe-column>
         <vxe-column field="length" title="长度" :edit-render="{}">
+          <template #default="{ row } : { row:RowVO}">
+            <span>{{row.metaInfo.length}}</span>
+          </template>
           <template #edit="{ row }: { row:RowVO}">
-            <vxe-input v-model="row.length" type="text" placeholder="请输入长度"></vxe-input>
+            <vxe-input v-model="row.metaInfo.length" type="number" placeholder="请输入长度"></vxe-input>
           </template>
         </vxe-column>
         <vxe-column field="nullable" title="是否为空" :edit-render="{}">
           <template #default="{ row } : { row:RowVO}">
-            <span>{{ formatBoolean(row.nullable) }}</span>
+            <span>{{ formatBoolean(row.metaInfo ? row.metaInfo.nullable : false) }}</span>
           </template>
           <template #edit="{ row } : { row:RowVO}">
-            <vxe-select v-model="row.nullable" transfer>
+            <vxe-select v-model="row.metaInfo.nullable" transfer>
               <vxe-option v-for="item in booleanList" :key="item.value" :value="item.value" :label="item.label"></vxe-option>
             </vxe-select>
           </template>
         </vxe-column>
         <vxe-column field="remarks" title="备注" :edit-render="{}">
+          <template #default="{ row } : { row:RowVO}">
+            <span>{{row.metaInfo.remarks}}</span>
+          </template>
           <template #edit="{ row }: { row:RowVO}">
-            <vxe-input v-model="row.remarks" type="text" placeholder="备注"></vxe-input>
+            <vxe-input v-model="row.metaInfo.remarks" type="text" placeholder="备注"></vxe-input>
           </template>
         </vxe-column>
         <vxe-column field="defaultValue" title="默认值" :edit-render="{}">
+          <template #default="{ row } : { row:RowVO}">
+            <span>{{row.metaInfo.defaultValue}}</span>
+          </template>
           <template #edit="{ row }: { row:RowVO}">
-            <vxe-input v-model="row.defaultValue" type="text" placeholder="默认值"></vxe-input>
+            <vxe-input v-model="row.metaInfo.defaultValue" type="text" placeholder="默认值"></vxe-input>
           </template>
         </vxe-column>
         <vxe-column title="操作" width="160">
@@ -149,8 +158,6 @@ import { VXETable} from 'vxe-table'
 import type { VxeTableInstance } from 'vxe-table';
 import type { VxeTableEvents, VxeFormPropTypes} from 'vxe-table';
 import Prism from "prismjs";
-import {types} from "sass";
-import List = types.List;
 
 onUpdated(() => {
   Prism.highlightAll(); //修改内容后重新渲染
@@ -166,12 +173,13 @@ interface RowVO {
   columnType: string
   isPrimaryKey: boolean
   isAutoIncrement: boolean
-  length: number
-  nullable: boolean
-  remarks: string
-  defaultValue: string
+  metaInfo: {
+    length: number
+    nullable: boolean
+    remarks: string
+    defaultValue: object
+  }
 }
-
 interface TableInfo {
   tableName: string,
   tableFields: Array<RowVO>,
@@ -223,11 +231,7 @@ const booleanList = ref([
 ])
 
 
-const sql = ref(`DROP TABLE IF EXISTS \`sys_user\`;
-CREATE TABLE \`sys_user\`
-(
-    \`id\` int(11)  NOT NULL  AUTO_INCREMENT PRIMARY KEY COMMENT 'id'
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户表' ROW_FORMAT = Dynamic;`)
+const sql = ref(``)
 
 const selectRow = ref(0)
 
@@ -312,8 +316,11 @@ const handleKeyDown = (param: any) => {
 const insertEvent = async (row?: RowVO | number) => {
   const $table = xTable.value
   if ($table) {
+    let metaInfo = {
+      length: 0, nullable: false, remarks: '',  defaultValue: ''
+    }
     const record = {
-       columnName: '', columnType: '', isPrimaryKey: false, isAutoIncrement: false, length: 0, nullable: false, remarks: '',  defaultValue: ''
+       columnName: '', columnType: '', isPrimaryKey: false, isAutoIncrement: false, metaInfo: metaInfo
     }
     const { row: newRow } = await $table.insertAt(record, row)
     await $table.setEditCell(newRow, 'columnName')
@@ -359,13 +366,26 @@ const saveRowEvent = (row: RowVO) => {
   const $table = xTable.value
   if ($table) {
     $table.clearEdit().then(() => {
-      loading.value = true
-      setTimeout(() => {
-        loading.value = false
-        tableData.value.push(row)
-        console.log(tableData.value)
-        VXETable.modal.message({ content: `保存成功！name=${row.columnName}`, status: 'success' })
-      }, 300)
+      tableData.value.push(...$table.getInsertRecords())
+      $table.loadData(tableData.value)
+      tableData.value.forEach((item: RowVO) => {
+        item.metaInfo.length = Number(item.metaInfo.length);
+      })
+      console.log("表格数据：",tableData.value)
+
+      let tableInfo: TableInfo = {
+        tableName: formData.tableName,
+        tableFields: tableData.value,
+        tableComment: formData.tableComment
+      }
+      sendPostRequest('/api/genSqlTable', tableInfo).then(one =>{
+        if (one.status == 200){
+          sql.value = one.data
+          VXETable.modal.message({ content: '生成成功！', status: 'success' })
+        } else {
+          VXETable.modal.message({ content: '生成失败', status: 'error' })
+        }
+      })
     })
   }
 }
