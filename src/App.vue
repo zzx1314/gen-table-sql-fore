@@ -311,6 +311,19 @@ const sendPostRequest = async (url: string, data: any): Promise<httpResult> => {
   }
 }
 
+const sentGetRequest = async (url: string): Promise<httpResult> => {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Network response was not ok');
+    const responseData = await response.json(); // 如果响应数据是 JSON 格式
+    console.log('Response data:', responseData.status);
+    return responseData;
+  } catch (error) {
+    console.error('Error sending POST request:', error);
+    throw error; // 可选：抛出错误以在上层处理
+  }
+}
+
 const handleKeyDown = (param: any) => {
   const keyCode = param.$event.keyCode;
   if (keyCode === 38 || keyCode === 40) {
@@ -368,10 +381,28 @@ const removeSelectRowEvent = () => {
 
 const setDb = () => {
   showEdit.value = true
+  // 查询一下数据库信息
+  sentGetRequest('/api/getDbInfo').then(res =>{
+    if (res.status == 200){
+      if (res.data) {
+        formData.driver = res.data.driver
+        formData.url = res.data.url
+        formData.userName = res.data.userName
+        formData.password = res.data.password
+      }
+    }
+  })
 }
 
 const executeSql = () =>{
   // 执行sql
+  sentGetRequest('/api/executeSql').then(res =>{
+    if (res.status == 200){
+      VXETable.modal.message({ content: '数据库生成成功！', status: 'success' })
+    } else {
+      VXETable.modal.message({ content: '数据库生成失败！', status: 'error' })
+    }
+  })
 }
 
 const formatBoolean = (value: boolean) => {
