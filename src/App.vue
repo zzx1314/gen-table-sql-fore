@@ -398,7 +398,7 @@ const setDb = () => {
 
 const executeSql = () =>{
   // 执行sql
-  sentGetRequest('/api/executeSql').then(res =>{
+  sentGetRequest('/api/execuSqlInDb').then(res =>{
     if (res.status == 200){
       VXETable.modal.message({ content: '数据库生成成功！', status: 'success' })
     } else {
