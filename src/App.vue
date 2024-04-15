@@ -18,13 +18,13 @@
           show-overflow
           keep-source
           ref="xTable"
-          :row-config="{isCurrent: true, autoClear: false, isHover: true}"
+          :row-config="{isCurrent: true, isHover: true}"
           :column-config="{resizable: true}"
           :loading="loading"
           :data="tableData"
           @keydown="handleKeyDown"
           @current-change="currentChangeEvent"
-          :edit-config="{trigger: 'manual', mode: 'row', showStatus: true}">
+          :edit-config="{trigger: 'manual', mode: 'row',  autoClear: false, showStatus: true}">
         <vxe-column type="checkbox" width="60"></vxe-column>
         <vxe-column type="seq" width="50"></vxe-column>
         <vxe-column field="columnName" title="字段名" :edit-render="{}">
@@ -329,6 +329,10 @@ const sentGetRequest = async (url: string): Promise<httpResult> => {
 const handleKeyDown = (param: any) => {
   const keyCode = param.$event.keyCode;
   if (keyCode === 38 || keyCode === 40) {
+    if (tableData.value.length == 0) {
+      VXETable.modal.message({ content: '请先保存字段！', status: 'error' })
+      return
+    }
     param.$event.preventDefault(); // 可选：阻止默认行为，如光标移动等
     if (keyCode === 38) {
       console.log('向上移动');
