@@ -398,6 +398,10 @@ const setDb = () => {
 
 const executeSql = () =>{
   // 执行sql
+  if (sql.value == ''){
+    VXETable.modal.message({ content: '请先生成SQL语句！', status: 'error' })
+    return
+  }
   sentGetRequest('/api/execuSqlInDb').then(res =>{
     if (res.status == 200){
       VXETable.modal.message({ content: '数据库生成成功！', status: 'success' })
@@ -446,6 +450,10 @@ const saveRowEvent = (row: RowVO) => {
         tableName: formData.tableName,
         tableFields: tableData.value,
         tableComment: formData.tableComment
+      }
+      if (tableInfo.tableName == '' || tableInfo.tableFields.length == 0){
+        VXETable.modal.message({ content: '请先填写表名或字段！', status: 'error' })
+        return
       }
       sendPostRequest('/api/genSqlTable', tableInfo).then(one =>{
         if (one.status == 200){
