@@ -18,7 +18,7 @@
           show-overflow
           keep-source
           ref="xTable"
-          :row-config="{isCurrent: true, isHover: true}"
+          :row-config="{isCurrent: true, autoClear: false, isHover: true}"
           :column-config="{resizable: true}"
           :loading="loading"
           :data="tableData"
