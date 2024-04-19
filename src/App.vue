@@ -499,7 +499,10 @@ const getEnWord = (str: string, row: RowVO) => {
   let sign = md5.md5(str1);
   let url = '/en/api/trans/vip/translate?appid='+appid+'&q='+query+'&from='+from+'&to='+to+'&salt='+salt+'&sign='+sign
   sentGetRequest(url).then((res : any) =>{
-    row.columnName = res.trans_result[0].dst;
+    let result = res.trans_result[0].dst;
+    if (result) {
+      row.columnName = result.toLowerCase().replace(/\s+/g, '_');
+    }
   })
 }
 </script>
