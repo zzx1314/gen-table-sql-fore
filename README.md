@@ -1,6 +1,6 @@
 # gen-table-sql
 
-这是一个使用vue3生成mysql表sql的vue项目
+这是一个使用vue3生成mysql建表语句的项目
 
 ### 项目初始化
 
