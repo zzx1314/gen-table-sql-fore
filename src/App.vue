@@ -86,7 +86,7 @@
             <span>{{row.metaInfo.remarks}}</span>
           </template>
           <template #edit="{ row }: { row:RowVO}">
-            <vxe-input v-model="row.metaInfo.remarks" type="text" placeholder="备注"></vxe-input>
+            <vxe-input @blur="translateRemarks(row)" v-model="row.metaInfo.remarks" type="text" placeholder="备注"></vxe-input>
           </template>
         </vxe-column>
         <vxe-column field="defaultValue" title="默认值" :edit-render="{}">
@@ -168,6 +168,7 @@ import { VXETable} from 'vxe-table'
 import type { VxeTableInstance } from 'vxe-table';
 import type { VxeTableEvents, VxeFormPropTypes} from 'vxe-table';
 import Prism from "prismjs";
+import md5 from 'js-md5';
 
 onUpdated(() => {
   Prism.highlightAll(); //修改内容后重新渲染
@@ -318,7 +319,6 @@ const sentGetRequest = async (url: string): Promise<httpResult> => {
     const response = await fetch(url);
     if (!response.ok) throw new Error('Network response was not ok');
     const responseData = await response.json(); // 如果响应数据是 JSON 格式
-    console.log('Response data:', responseData.status);
     return responseData;
   } catch (error) {
     console.error('Error sending POST request:', error);
@@ -479,6 +479,28 @@ const cancelRowEvent = (row: RowVO) => {
       $table.revertData(row)
     })
   }
+}
+
+const translateRemarks = (row: RowVO) => {
+  if (row.metaInfo.remarks){
+    getEnWord(row.metaInfo.remarks, row);
+  }
+}
+
+const getEnWord = (str: string, row: RowVO) => {
+  let appid = '20240418002028164';
+  let key = 'x9AgFqcsTQlUDXPs2qre';
+  let salt = (new Date).getTime();
+  let query = str;
+  // 多个query可以用\n连接  如 query='apple\norange\nbanana\npear'
+  let from = 'zh';
+  let to = 'en';
+  let str1 = appid + query + salt +key;
+  let sign = md5.md5(str1);
+  let url = '/en/api/trans/vip/translate?appid='+appid+'&q='+query+'&from='+from+'&to='+to+'&salt='+salt+'&sign='+sign
+  sentGetRequest(url).then((res : any) =>{
+    row.columnName = res.trans_result[0].dst;
+  })
 }
 </script>
 
