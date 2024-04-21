@@ -488,20 +488,11 @@ const translateRemarks = (row: RowVO) => {
 }
 
 const getEnWord = (str: string, row: RowVO) => {
-  let appid = '20240418002028164';
-  let key = 'x9AgFqcsTQlUDXPs2qre';
-  let salt = (new Date).getTime();
-  let query = str;
-  // 多个query可以用\n连接  如 query='apple\norange\nbanana\npear'
-  let from = 'zh';
-  let to = 'en';
-  let str1 = appid + query + salt +key;
-  let sign = md5.md5(str1);
-  let url = '/en/api/trans/vip/translate?appid='+appid+'&q='+query+'&from='+from+'&to='+to+'&salt='+salt+'&sign='+sign
+  let url = '/api/translateWord?word='+ str
   sentGetRequest(url).then((res : any) =>{
-    let result = res.trans_result[0].dst;
-    if (result) {
-      row.columnName = result.toLowerCase().replace(/\s+/g, '_');
+    console.log(res);
+    if (res.data){
+     row.columnName = res.data.toLowerCase().replace(/\s+/g, '_');
     }
   })
 }
